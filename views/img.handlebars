@@ -1,0 +1,51 @@
+   <br>
+   <h3>Конвертация изображения</h3>  
+   
+       {{#if msg}}
+          <div class="alert {{class}}" role="alert">
+            {{msg}}
+          </div>
+        {{/if}} 
+    <form action="/uploadimg" method="POST" enctype="multipart/form-data">
+      <div class="form-group mb-3">
+          <input name="myimage" class="form-control-file" type="file">
+      </div>
+      <button class="btn btn-primary" type="submit">Отправить</button>
+    </form>
+    <br>
+ {{#if pth}}
+ <img style="visibility: hidden;" id="pht_edit" src="{{pth}}">
+  {{/if}}
+
+    {{#if file}}
+
+    <img id="photo" src="{{file}}">
+      <br>
+        <br>
+          <form action="/imgprocess" method="post">
+              <input type="hidden" value={{file}} name="name" id="name">
+              <input type="hidden" value="0" name="x1" id="x1">
+              <input type="hidden" value="0" name="y1" id="y1">
+              <input type="hidden" value="100" name="w" id="w">
+              <input type="hidden" value="100" name="h" id="h">
+              <button type="submit" class="btn btn-success">Подтвердить выделение</button>
+          </form>
+          <br>
+        <br>
+    {{/if}}
+        <script type="text/javascript">
+        $(document).ready(function () {
+          $('img#photo').imgAreaSelect({
+          handles: true,
+          onSelectEnd: function (img, selection) {
+          //alert('x1 -> ' + selection.x1 + ' ' + 'y1 -> ' + selection.y1 + ' ' + 'x2 -> ' + selection.x2 + ' ' + 'y2 -> ' + selection.y2);  
+          //imgName = document.getElementById("name").value;
+          //document.getElementById("name").value = (imgName.split("/")[1]);
+          document.getElementById("x1").value = selection.x1;
+          document.getElementById("y1").value = selection.y1;
+          document.getElementById("w").value = selection.width;
+          document.getElementById("h").value = selection.height;
+        }
+      });
+    });
+  </script>
