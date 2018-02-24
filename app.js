@@ -6,7 +6,6 @@ const jimp = require('jimp');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-
 const storage = multer.diskStorage({
   destination : './public/uploads/',
   filename : function(req, file, cb){
