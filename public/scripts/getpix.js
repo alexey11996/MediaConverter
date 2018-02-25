@@ -15,7 +15,17 @@ var i = 0;
 for (l = length + 1; (i + width) < l; i += width) {
     n.push(typedarray.slice(i, i + width));
 }
-console.log(n[0])
-console.log(n[1])
-console.log(n[2])
 
+exportToCsv("ImageData.csv", n)
+
+let csvContent = "data:text/csv;charset=utf-8,";
+n.forEach(function(rowArray){
+   let row = rowArray.join(",");
+   csvContent += row + "\r\n";
+}); 
+var encodedUri = encodeURI(csvContent);
+var link = document.createElement("a");
+link.setAttribute("href", encodedUri);
+link.setAttribute("download", "imageData.csv");
+document.body.appendChild(link); // Required for FF
+link.click(); 
