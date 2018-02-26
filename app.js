@@ -5,11 +5,19 @@ const path = require('path');
 const jimp = require('jimp');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const PP = require('papaparse');
 
 const storage = multer.diskStorage({
   destination : './public/uploads/',
   filename : function(req, file, cb){
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const storageCSV = multer.diskStorage({
+  destination : './public/csv/',
+  filename : function(req, file, cb){
+    cb(null, file.originalname);
   }
 });
 
@@ -21,9 +29,16 @@ const upload = multer({
   }
 }).single('myimage');
 
+const upload_csv = multer({
+  storage : storageCSV,
+  fileFilter : function (req, file, cb){
+    checkCSV(file, cb);
+  }
+}).single('mycsv');
+
 function checkFileType(file, cb){
   //Allowed ext
-  const filetype = /jpeg|jpg|png/;
+  const filetype = /jpeg|jpg|png|/;
   //Check ext
   const extname = filetype.test(path.extname(file.originalname).toLowerCase());
   //Check mime
@@ -32,7 +47,22 @@ function checkFileType(file, cb){
   if (mimetype && extname){
     return cb(null, true)
   } else {
-    cb('Error: Images Only!');
+    cb('Только изображения!');
+  }
+}
+
+function checkCSV(file, cb){
+  //Allowed ext
+  const filetype = /|csv|/;
+  //Check ext
+  const extname = filetype.test(path.extname(file.originalname).toLowerCase());
+  //Check mime
+  const mimetype = filetype.test(file.mimetype);
+  
+  if (mimetype && extname){
+    return cb(null, true)
+  } else {
+    cb('Только CSV формат!');
   }
 }
 
@@ -55,7 +85,7 @@ app.post('/uploadimg', (req, res) => {
     if (err) {
       res.render('img', {
         msg : err,
-        class : 'alert_danger'
+        class : 'alert-danger'
       });
     } else {
       if (req.file == undefined){
@@ -64,6 +94,7 @@ app.post('/uploadimg', (req, res) => {
           class : 'alert-danger'
         });
       } else {
+        // Здесь добавить путь в БД (в будущем)
         res.render('img', {
           msg : 'Файл добавлен! Выделите необходимую область и подтвердите выделение',
           class : 'alert-success',
@@ -97,6 +128,33 @@ app.post('/imgprocess', (req, res) =>{
     }
   })
 });
+
+app.get('/uploadcsv', (req, res) => res.render('img_csv'))
+
+app.post('/uploadcsv', (req, res) => {
+  upload_csv(req, res, (err) => {
+    if (err) {
+      res.render('img_csv', {
+        msg : err,
+        class : 'alert-danger'
+      });
+    } else {
+      if (req.file == undefined){
+        res.render('img_csv', {
+          msg : 'Выберите файл!',
+          class : 'alert-danger'
+        });
+      } else {
+        // Здесь добавить путь в БД (в будущем)
+
+        res.render('img_csv', {
+          msg : 'Файл добавлен!',
+          class : 'alert-success'
+        });
+      }
+    }
+  })
+})
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("Server listening on port %d in %s mode", this.address().port, app.settings.env);

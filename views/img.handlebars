@@ -1,5 +1,5 @@
    <br>
-   <h3>Конвертация изображения</h3>     
+   <h3>Конвертация изображения в CSV формат</h3>     
        {{#if msg}}
           <div class="alert {{class}}" role="alert">
             {{msg}}
@@ -17,7 +17,7 @@
      <script type="text/javascript" src="scripts/getpix.js"></script>
   {{/if}}
     {{#if file}}
-    <img id="photo" src="{{file}}">
+    <img class="img-responsive" id="photo" src="{{file}}">
       <br>
         <br>
           <form action="/imgprocess" method="post">

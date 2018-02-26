@@ -1,0 +1,14 @@
+<br>
+   <h3>Построение изображения из CSV файла</h3>     
+       {{#if msg}}
+          <div class="alert {{class}}" role="alert">
+            {{msg}}
+          </div>
+        {{/if}} 
+    <form action="/uploadcsv" method="POST" enctype="multipart/form-data">
+      <div class="form-group mb-3">
+          <input name="mycsv" class="form-control-file" type="file">
+      </div>
+      <button class="btn btn-primary" type="submit">Отправить</button>
+    </form>
+
