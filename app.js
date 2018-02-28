@@ -6,6 +6,7 @@ const jimp = require('jimp');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const PP = require('papaparse');
+//const fetch = require('node-fetch');
 
 const storage = multer.diskStorage({
   destination : './public/uploads/',
@@ -146,7 +147,7 @@ app.post('/uploadcsv', (req, res) => {
         });
       } else {
         // Здесь добавить путь в БД (в будущем)
-
+        
         res.render('img_csv', {
           msg : 'Файл добавлен!',
           class : 'alert-success'
