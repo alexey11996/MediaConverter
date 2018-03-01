@@ -1,4 +1,5 @@
-var myImage = document.getElementById('pht_edit');
+var myImage = document.getElementById('pht_edit')
+var ImageName = (((document.getElementById('pht_edit').src).replace(/^.*[\\\/]/, '')).split('.'))[0];
 var w = myImage.width, h = myImage.height;
 var canvas = document.createElement('canvas');
 canvas.width = w;
@@ -15,9 +16,10 @@ var i = 0;
 for (l = length + 1; (i + width) < l; i += width) {
     n.push(typedarray.slice(i, i + width));
 }
-//console.log(n[0])
-
-exportToCsv("ImageData.csv", n)
+//console.log(res_name)
+var arr = [1,2,3,4,5]
+arr.
+exportToCsv(`${ImageName}-${width}x${height}x8bit.csv`, n)
 
 // let csvContent = "data:text/csv;charset=utf-8,";
 // n.forEach(function(rowArray){

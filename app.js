@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 const storageCSV = multer.diskStorage({
   destination : './public/csv/',
   filename : function(req, file, cb){
-    cb(null, file.originalname);
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
 
@@ -54,7 +54,7 @@ function checkFileType(file, cb){
 
 function checkCSV(file, cb){
   //Allowed ext
-  const filetype = /|csv|/;
+  const filetype = /csv/;
   //Check ext
   const extname = filetype.test(path.extname(file.originalname).toLowerCase());
   //Check mime

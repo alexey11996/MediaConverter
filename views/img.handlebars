@@ -25,9 +25,16 @@
               <input type="hidden" value="0" name="x1" id="x1">
               <input type="hidden" value="0" name="y1" id="y1">
               <input type="hidden" value="100" name="w" id="w">
-              <input type="hidden" value="100" name="h" id="h">            
-              <button type="submit" class="btn btn-success">Подтвердить выделение</button>
-          </form>
+              <input type="hidden" value="100" name="h" id="h">      
+              <div class="row">   
+                <div class="col-sm-3">
+              <button type="submit" class="btn btn-success">Подтвердить выделение</button> 
+              </div>
+              <div class="col-sm-9">
+              <h5 id="size"></h5>
+              </div>
+              </div>   
+          </form>         
           <br>
         <br>
     {{/if}}
@@ -40,6 +47,7 @@
           document.getElementById("y1").value = selection.y1;
           document.getElementById("w").value = selection.width;
           document.getElementById("h").value = selection.height;
+          document.getElementById("size").innerHTML = `Размер выделенной области составляет <mark> ${(selection.width*selection.height)/8} <mark> байт`;
         }
       });
     });
