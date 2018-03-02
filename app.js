@@ -6,7 +6,9 @@ const jimp = require('jimp');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const PP = require('papaparse');
-//const fetch = require('node-fetch');
+var fs = require('fs'); 
+var parse = require('csv-parse');
+var matem = require('mathjs');
 
 const storage = multer.diskStorage({
   destination : './public/uploads/',
@@ -54,7 +56,7 @@ function checkFileType(file, cb){
 
 function checkCSV(file, cb){
   //Allowed ext
-  const filetype = /csv/;
+  const filetype = /csv|xlsx|/;
   //Check ext
   const extname = filetype.test(path.extname(file.originalname).toLowerCase());
   //Check mime
@@ -80,6 +82,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/', (req, res) => res.render('index'));
 
 app.get('/uploadimg', (req, res) => res.render('img'));
+
+app.get('/uploadaudio', (req, res) => res.render('audio'));
 
 app.post('/uploadimg', (req, res) => {
   upload(req, res, (err) => {
@@ -146,17 +150,101 @@ app.post('/uploadcsv', (req, res) => {
           class : 'alert-danger'
         });
       } else {
-        // Здесь добавить путь в БД (в будущем)
-        
-        res.render('img_csv', {
-          msg : 'Файл добавлен!',
-          class : 'alert-success'
-        });
+        var vector = [];
+        var csvData=[];
+        var maximum;
+        fs.createReadStream(`public/csv/${req.file.filename}`)
+            .pipe(parse({delimiter: ','}))
+            .on('data', function(csvrow) {
+                csvData.push(csvrow);        
+            })
+            .on('end', function() {
+            for(var i = 0; i < csvData.length; i++) vector = vector.concat(csvData[i]);
+            //maximum = max(vector)
+            res.render('img_csv', {
+              msg : 'Файл добавлен! Характеристики файла представлены ниже',
+              class : 'alert-success',
+              result: {
+                "Максимальное значение" : `${max(vector)}`,
+                "Минимальное значение" : `${min(vector)}`,
+                "Максимальная амплитуда значений" : `${range(vector)}`,
+                "Сумма элементов" : `${sum(vector)}`,
+                "Дисперсия" : `${variance(vector)}`,
+                "Среднеквадратическое отклонение" : `${standardDeviation(vector)}`,
+                "Среднее значение" : `${mean(vector)}`,
+                "Медиана" : `${median(vector)}`,
+                "Мода" : `${modes(vector)}`
+              }
+            });
+          });
+        }
       }
-    }
-  })
+    })
 })
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("Server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
+
+function max (array) {
+  return Math.max.apply(null, array);
+}
+
+function min (array) {
+  return Math.min.apply(null, array);
+  }
+  
+function range (array) {
+  return max(array) - min(array);
+  }
+  
+  function sum (array) {
+  var num = 0;
+  for (var i = 0; i < array.length; i++) num += Number(array[i]);
+  return num;
+  }
+  
+function variance (array) {
+  var mean = matem.mean(array);
+  return matem.mean(array.map(function(num) {
+    return Math.pow(num - mean, 2);
+  }));
+}
+
+  function standardDeviation (array) {
+  return Math.sqrt(variance(array));
+  }
+
+  function mean (array) {
+  return sum(array) / array.length;
+}
+
+function median (array) {
+  array.sort(function(a, b) {
+    return a - b;
+  });
+  var mid = array.length / 2;
+  return mid % 1 ? array[mid - 0.5] : (array[mid - 1] + array[mid]) / 2;
+  }
+  
+  function modes (array) {
+  if (!array.length) return [];
+  var modeMap = {},
+    maxCount = 0,
+    modes = [];
+
+  array.forEach(function(val) {
+    if (!modeMap[val]) modeMap[val] = 1;
+    else modeMap[val]++;
+
+    if (modeMap[val] > maxCount) {
+      modes = [val];
+      maxCount = modeMap[val];
+    }
+    else if (modeMap[val] === maxCount) {
+      modes.push(val);
+      maxCount = modeMap[val];
+    }
+  });
+  return modes;
+}

@@ -1,14 +1,33 @@
 <br>
-   <h3>Построение изображения из CSV файла</h3>     
+   <h3>Получение характеристик изображения по CSV файлу</h3>     
        {{#if msg}}
           <div class="alert {{class}}" role="alert">
             {{msg}}
           </div>
         {{/if}} 
+
     <form action="/uploadcsv" method="POST" enctype="multipart/form-data">
       <div class="form-group mb-3">
           <input name="mycsv" class="form-control-file" type="file">
       </div>
-      <button class="btn btn-primary" type="submit">Отправить</button>
+      <button class="btn btn-primary mb-3" type="submit">Отправить</button>
     </form>
 
+  {{#if result}}
+<table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Характеристика</th>
+        <th>Значение</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each result}}
+      <tr>
+        <td>{{@key}}</td>
+        <td>{{this}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}

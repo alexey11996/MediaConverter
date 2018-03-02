@@ -17,8 +17,7 @@ for (l = length + 1; (i + width) < l; i += width) {
     n.push(typedarray.slice(i, i + width));
 }
 //console.log(res_name)
-var arr = [1,2,3,4,5]
-arr.
+
 exportToCsv(`${ImageName}-${width}x${height}x8bit.csv`, n)
 
 // let csvContent = "data:text/csv;charset=utf-8,";
