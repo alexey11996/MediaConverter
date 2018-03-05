@@ -5,10 +5,10 @@ const path = require('path');
 const jimp = require('jimp');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const PP = require('papaparse');
 var fs = require('fs'); 
 var parse = require('csv-parse');
 var matem = require('mathjs');
+var cp = require('child_process');
 
 const storage = multer.diskStorage({
   destination : './public/uploads/',
@@ -18,7 +18,14 @@ const storage = multer.diskStorage({
 });
 
 const storageCSV = multer.diskStorage({
-  destination : './public/csv/',
+  destination : './public/csv_image/',
+  filename : function(req, file, cb){
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const storageAudio = multer.diskStorage({
+  destination : './public/audio/',
   filename : function(req, file, cb){
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
@@ -39,12 +46,16 @@ const upload_csv = multer({
   }
 }).single('mycsv');
 
+const upload_audio = multer({
+  storage : storageAudio,
+  fileFilter : function (req, file, cb){
+    checkAudio(file, cb);
+  }
+}).single('myAudio');
+
 function checkFileType(file, cb){
-  //Allowed ext
   const filetype = /jpeg|jpg|png|/;
-  //Check ext
   const extname = filetype.test(path.extname(file.originalname).toLowerCase());
-  //Check mime
   const mimetype = filetype.test(file.mimetype);
   
   if (mimetype && extname){
@@ -55,17 +66,26 @@ function checkFileType(file, cb){
 }
 
 function checkCSV(file, cb){
-  //Allowed ext
   const filetype = /csv|xlsx|/;
-  //Check ext
   const extname = filetype.test(path.extname(file.originalname).toLowerCase());
-  //Check mime
   const mimetype = filetype.test(file.mimetype);
   
   if (mimetype && extname){
     return cb(null, true)
   } else {
     cb('Только CSV формат!');
+  }
+}
+
+function checkAudio(file, cb){
+  const filetype = /wav|mp3|/;
+  const extname = filetype.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetype.test(file.mimetype);
+  
+  if (mimetype && extname){
+    return cb(null, true)
+  } else {
+    cb('Только аудио формат!');
   }
 }
 
@@ -84,6 +104,52 @@ app.get('/', (req, res) => res.render('index'));
 app.get('/uploadimg', (req, res) => res.render('img'));
 
 app.get('/uploadaudio', (req, res) => res.render('audio'));
+
+app.post('/uploadaudio', (req, res) => {
+  upload_audio(req, res, (err) => {
+    if (err) {
+      res.render('audio', {
+        msg : err,
+        class : 'alert-danger'
+      });
+    } else {
+      if (req.file == undefined){
+        res.render('audio', {
+          msg : 'Выберите файл!',
+          class : 'alert-danger'
+        });
+      } else {        
+        var file_path = `D:/imgselect/public/audio/${req.file.filename}`;
+        var par_path = `D:/imgselect/public/csv_audio`;
+        var csvData = [];
+        cp.exec(`ConsoleApp1 ${file_path} ${par_path}`, function(e, stdout, stderr) { })
+
+        // if (fs.existsSync(`public/csv_audio/${(req.file.filename).split(".")[0]}/16_44100_1_1_383924.csv`)) {
+        //   fs.createReadStream(`public/csv_audio/${(req.file.filename).split(".")[0]}/16_44100_1_1_383924.csv`)
+        //   .pipe(parse({delimiter: ';'}))
+        //   .on('data', function(csvrow) {
+        //       csvData.push(csvrow);        
+        //   })
+        //   .on('end', function() {
+        //     Здесь транспонировать массив
+        //   });
+        // }
+
+        res.render('audio', {
+          msg : 'Файл добавлен! Прослушайте запись и выберете дейтсвие',
+          class : 'alert-success',
+          file : `audio/${req.file.filename}`,
+          audioPath : `audio/${req.file.filename}`
+        });
+      }
+    }
+  })
+})
+
+app.post('/audioDiagram', (req, res) => {
+  var audio_pth = req.body.audioPath;
+  console.log(audio_pth);
+})
 
 app.post('/uploadimg', (req, res) => {
   upload(req, res, (err) => {
@@ -152,8 +218,8 @@ app.post('/uploadcsv', (req, res) => {
       } else {
         var vector = [];
         var csvData=[];
-        var maximum;
-        fs.createReadStream(`public/csv/${req.file.filename}`)
+        //var maximum;
+        fs.createReadStream(`public/csv_image/${req.file.filename}`)
             .pipe(parse({delimiter: ','}))
             .on('data', function(csvrow) {
                 csvData.push(csvrow);        
@@ -223,8 +289,8 @@ function median (array) {
   array.sort(function(a, b) {
     return a - b;
   });
-  var mid = array.length / 2;
-  return mid % 1 ? array[mid - 0.5] : (array[mid - 1] + array[mid]) / 2;
+  var mid = Number(array.length) / 2;
+  return mid % 1 ? Number(array[mid - 0.5]) : (Number(array[mid - 1]) + Number(array[mid])) / 2;
   }
   
   function modes (array) {

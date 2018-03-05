@@ -1,1 +1,76 @@
-This is audio Page
+<br>
+   <h3>Конвертация аудиозаписи в CSV формат</h3>     
+       {{#if msg}}
+          <div class="alert {{class}}" role="alert">
+            {{msg}}
+          </div>
+        {{/if}} 
+
+    <form action="/uploadaudio" method="POST" enctype="multipart/form-data">
+      <div class="form-group mb-3">
+          <input name="myAudio" class="form-control-file" type="file">
+      </div>
+      <button class="btn btn-primary mb-3" type="submit">Отправить</button>
+    </form>
+ {{#if audioPath}}
+    <div class="row">
+        <div class="col-md-4">
+            <audio controls>
+                <source src="{{audioPath}}" type="audio/wav">
+            </audio>
+        </div>
+        <div class="col-md-8">
+            <form action="/audioDiagram" method="post">
+                <input type="hidden" value="{{audioPath}}" name="audioPath" id="audioPath">
+                <button class="btn btn-primary mb-3" type="submit">Построить график аудиофайла</button>
+            </form>
+            </div>
+    </div>
+ {{/if}}
+
+ {{!-- <div id="container" style="height: 400px; max-width: 800px; margin: 0 auto"></div> --}}
+  <script>
+    
+//var n = 10,
+    data = [[134,232,365],[443,587,651],[784,809,990],[104,956,823],[764,657,586],[479,308,260]];
+
+console.time('line');
+Highcharts.chart('container', {
+
+    chart: {
+        zoomType: 'x'
+    },
+
+    title: {
+        text: 'Highcharts drawing'
+    },
+
+    subtitle: {
+        text: 'Using the Boost module'
+    },
+
+    tooltip: {
+        valueDecimals: 2
+    },
+
+    xAxis: {
+        type: 'line',
+        events: {
+        afterSetExtremes: function(event) {
+          var start = Math.ceil(event.min);
+          var end = Math.floor(event.max);
+          alert(start + ' ' + end)
+            }
+        }
+    },
+
+    series: [{
+        data: data,
+        lineWidth: 0.5,
+        name: 'Hourly data points'
+    }] 
+
+});
+console.timeEnd('line');
+
+  </script>
