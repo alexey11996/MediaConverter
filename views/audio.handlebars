@@ -12,65 +12,117 @@
       </div>
       <button class="btn btn-primary mb-3" type="submit">Отправить</button>
     </form>
- {{#if audioPath}}
-    <div class="row">
-        <div class="col-md-4">
-            <audio controls>
-                <source src="{{audioPath}}" type="audio/wav">
-            </audio>
-        </div>
-        <div class="col-md-8">
-            <form action="/audioDiagram" method="post">
-                <input type="hidden" value="{{audioPath}}" name="audioPath" id="audioPath">
-                <button class="btn btn-primary mb-3" type="submit">Построить график аудиофайла</button>
-            </form>
+
+    {{#if file}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/wavesurfer.min.js"></script>
+
+        <div id="waveform"></div>
+
+        <div style="text-align: center">
+        <button class="btn btn-primary" onclick="wavesurfer.play()">
+            <i class="fa fa-play"></i>
+        </button>
+        <button class="btn btn-primary" onclick="wavesurfer.pause()">
+            <i class="fa fa-pause"></i>
+        </button>
+        <button class="btn btn-primary" onclick="wavesurfer.stop()">
+            <i class="fa fa-stop"></i>
+        </button>
+        
+        <div class="row">
+            <div class="col-md-12">
+              <input type="range" min="1" max="500" value="1" class="slider mb-5" id="slider">
             </div>
-    </div>
- {{/if}}
-
- {{!-- <div id="container" style="height: 400px; max-width: 800px; margin: 0 auto"></div> --}}
-  <script>
-    
-//var n = 10,
-    data = [[134,232,365],[443,587,651],[784,809,990],[104,956,823],[764,657,586],[479,308,260]];
-
-console.time('line');
-Highcharts.chart('container', {
-
-    chart: {
-        zoomType: 'x'
-    },
-
-    title: {
-        text: 'Highcharts drawing'
-    },
-
-    subtitle: {
-        text: 'Using the Boost module'
-    },
-
-    tooltip: {
-        valueDecimals: 2
-    },
-
-    xAxis: {
-        type: 'line',
-        events: {
-        afterSetExtremes: function(event) {
-          var start = Math.ceil(event.min);
-          var end = Math.floor(event.max);
-          alert(start + ' ' + end)
+        </div>
+        </div>  
+            <form action="/audioDiagram" id="formSend" method="post">
+              <input type="hidden" value={{file}} name="audioName" id="audioName">
+              <input type="hidden" value="1" name="StartTime" id="StartTime">
+              <input type="hidden" value="2" name="EndTime" id="EndTime">    
+              <div class="row">   
+                <div class="col-sm-3">
+              <button type="submit" class="btn btn-primary">Подтвердить выделение</button> 
+              </div>
+              <div class="col-sm-9">
+              <h5 id="size"></h5>
+              </div>
+              </div>   
+          </form> 
+        <script>
+            var range;
+            document.getElementById('formSend').addEventListener('submit', Commit)
+            function AskRange(){ 
+            range = prompt('Временной диапазон метки (в секундах):') 
+                if (range == '') { alert('Значение по умолчанию равно 5 секундам'); range = 5; }              
             }
-        }
-    },
+            var wavesurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: 'red',
+            progressColor: 'purple',
+            height: 150
+            });
 
-    series: [{
-        data: data,
-        lineWidth: 0.5,
-        name: 'Hourly data points'
-    }] 
+            wavesurfer.load(`{{file}}`);
 
-});
-console.timeEnd('line');
+            var slider = document.querySelector('#slider');
 
-  </script>
+            slider.oninput = function () {
+            var zoomLevel = Number(slider.value);
+            wavesurfer.zoom(zoomLevel);
+            };
+
+            function Commit() {
+            AskRange()
+            var start = document.getElementById(`StartTime`).value = wavesurfer.getCurrentTime() - range;
+            var end = document.getElementById(`EndTime`).value = wavesurfer.getCurrentTime() + range;
+            alert(`Начало отрезка: ${start}` + `\n` + `Конец отрезка: ${end}`);
+            }
+            
+        </script>
+        <style>
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: blue;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+</style>
+
+    {{/if}}
+{{!-- <form method="get" action="csv_image/mycsv-1520334257268.csv">
+   <button type="submit">Download!</button>
+</form> --}}
+{{#if folderName}}
+<iframe width="1" height="1" frameborder="0" src="csv_audio/{{folderName}}"></iframe>
+{{/if}}

@@ -9,6 +9,7 @@ var fs = require('fs');
 var parse = require('csv-parse');
 var matem = require('mathjs');
 var cp = require('child_process');
+var zipFolder = require("zip-folder");
 
 const storage = multer.diskStorage({
   destination : './public/uploads/',
@@ -119,27 +120,10 @@ app.post('/uploadaudio', (req, res) => {
           class : 'alert-danger'
         });
       } else {        
-        var file_path = `D:/imgselect/public/audio/${req.file.filename}`;
-        var par_path = `D:/imgselect/public/csv_audio`;
-        var csvData = [];
-        cp.exec(`ConsoleApp1 ${file_path} ${par_path}`, function(e, stdout, stderr) { })
-
-        // if (fs.existsSync(`public/csv_audio/${(req.file.filename).split(".")[0]}/16_44100_1_1_383924.csv`)) {
-        //   fs.createReadStream(`public/csv_audio/${(req.file.filename).split(".")[0]}/16_44100_1_1_383924.csv`)
-        //   .pipe(parse({delimiter: ';'}))
-        //   .on('data', function(csvrow) {
-        //       csvData.push(csvrow);        
-        //   })
-        //   .on('end', function() {
-        //     Здесь транспонировать массив
-        //   });
-        // }
-
         res.render('audio', {
-          msg : 'Файл добавлен! Прослушайте запись и выберете дейтсвие',
+          msg : 'Файл добавлен! Прослушайте запись и выберете интервал',
           class : 'alert-success',
-          file : `audio/${req.file.filename}`,
-          audioPath : `audio/${req.file.filename}`
+          file : `audio/${req.file.filename}`
         });
       }
     }
@@ -147,8 +131,27 @@ app.post('/uploadaudio', (req, res) => {
 })
 
 app.post('/audioDiagram', (req, res) => {
-  var audio_pth = req.body.audioPath;
-  console.log(audio_pth);
+  var audioName = req.body.audioName;
+  var folder = (audioName.split("/")[1]).split(".")[0];
+  var StartTime = Math.floor(req.body.StartTime);
+  var EndTime = Math.floor(req.body.EndTime);
+  if (StartTime <= 0 ){
+    res.render('audio', {
+      msg : 'Некорректный интервал! Попробуйте снова',
+      class : 'alert-danger'
+    });
+  } else {
+    var file_path = `D:/imgselect/public/${audioName}`;
+    var par_path = `D:/imgselect/public/csv_audio`;    
+    
+    cp.exec(`ConsoleApp1 ${file_path} ${par_path} ${StartTime} ${EndTime}`, function(e, stdout, stderr) { })
+    res.render('audio', {
+      msg : 'Скачивание начнется через несколько секунд...',
+      class : 'alert-success',
+      folderName : `${folder}`
+    });
+  }
+  //console.log(`${audioName} \n ${StartTime} \n ${EndTime} \n`);
 })
 
 app.post('/uploadimg', (req, res) => {
