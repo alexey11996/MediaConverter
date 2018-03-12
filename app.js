@@ -131,10 +131,15 @@ app.post('/uploadaudio', (req, res) => {
 })
 
 app.post('/audioDiagram', (req, res) => {
+  var sec;
   var audioName = req.body.audioName;
   var folder = (audioName.split("/")[1]).split(".")[0];
+  //console.log(folder);
   var StartTime = Math.floor(req.body.StartTime);
   var EndTime = Math.floor(req.body.EndTime);
+  var diff = StartTime - EndTime;
+  if (diff < 10) sec = 3000;
+  if (diff >= 10) sec = 7000;
   if (StartTime <= 0 ){
     res.render('audio', {
       msg : 'Некорректный интервал! Попробуйте снова',
@@ -143,15 +148,55 @@ app.post('/audioDiagram', (req, res) => {
   } else {
     var file_path = `D:/imgselect/public/${audioName}`;
     var par_path = `D:/imgselect/public/csv_audio`;    
-    
+
     cp.exec(`ConsoleApp1 ${file_path} ${par_path} ${StartTime} ${EndTime}`, function(e, stdout, stderr) { })
+
+// function checkExistsWithTimeout(path, timeout) {
+//   return new Promise((resolve, reject) => {
+//     const timeoutTimerId = setTimeout(handleTimeout, timeout)
+//     const interval = timeout / 6
+//     let intervalTimerId
+
+//     function handleTimeout() {
+//       clearTimeout(timerId)
+
+//       const error = new Error('path check timed out')
+//       error.name = 'PATH_CHECK_TIMED_OUT'
+//       reject(error)
+//     }
+
+//     function handleInterval() {
+//       fs.access(path, (err) => {
+//         if(err) {
+//           intervalTimerId = setTimeout(handleInterval, interval)
+//         } else {
+//           clearTimeout(timeoutTimerId)
+//           resolve(path)
+//         }
+//       })
+//     }
+
+//     intervalTimerId = setTimeout(handleInterval, interval)
+//   })
+// }
+
+    // checkExistsWithTimeout(`D:/imgselect/public/csv_audio/${folder}`, 2000).then(
+    //   zipFolder(`D:/imgselect/public/csv_audio/${folder}`, `D:/imgselect/public/csv_audio/${folder}.zip`, function(err) {
+    //     if(err) {
+    //         console.log('oh no!', err);
+    //     } else {
+    //         console.log('EXCELLENT');
+    //     }
+    //   })    
+    // )
+
     res.render('audio', {
-      msg : 'Скачивание начнется через несколько секунд...',
+      msg : 'Дождитесь завершения обработки и скачайте файл',
       class : 'alert-success',
-      folderName : `${folder}`
+      folderName : `${folder}`,
+      seconds : `${sec}`
     });
   }
-  //console.log(`${audioName} \n ${StartTime} \n ${EndTime} \n`);
 })
 
 app.post('/uploadimg', (req, res) => {
@@ -222,7 +267,7 @@ app.post('/uploadcsv', (req, res) => {
         var vector = [];
         var csvData=[];
         //var maximum;
-        fs.createReadStream(`public/csv_image/${req.file.filename}`)
+        var row = fs.createReadStream(`public/csv_image/${req.file.filename}`)
             .pipe(parse({delimiter: ','}))
             .on('data', function(csvrow) {
                 csvData.push(csvrow);        
@@ -246,6 +291,12 @@ app.post('/uploadcsv', (req, res) => {
               }
             });
           });
+          // row.on('error', function(err) {
+          //   res.render('img_csv', {
+          //     msg : 'Некорректный файл!',
+          //     class : 'alert-danger'
+          //   });
+          // });
         }
       }
     })

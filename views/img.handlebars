@@ -30,9 +30,9 @@
                 <div class="col-sm-3">
               <button type="submit" class="btn btn-primary">Подтвердить выделение</button> 
               </div>
-              <div class="col-sm-9">
+              {{!-- <div class="col-sm-9">
               <h5 id="size"></h5>
-              </div>
+              </div> --}}
               </div>   
           </form>         
           <br>
@@ -47,7 +47,7 @@
           document.getElementById("y1").value = selection.y1;
           document.getElementById("w").value = selection.width;
           document.getElementById("h").value = selection.height;
-          document.getElementById("size").innerHTML = `Размер выделенной области составляет <mark> ${(selection.width*selection.height)/8} </mark> байт`;
+          alert(`Размер выделенной области составляет ${(selection.width*selection.height)/8} байт`);
         }
       });
     });
