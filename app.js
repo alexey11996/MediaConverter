@@ -132,14 +132,21 @@ app.post('/uploadaudio', (req, res) => {
 
 app.post('/audioDiagram', (req, res) => {
   var sec;
+  var messg;
   var audioName = req.body.audioName;
   var folder = (audioName.split("/")[1]).split(".")[0];
   //console.log(folder);
   var StartTime = Math.floor(req.body.StartTime);
   var EndTime = Math.floor(req.body.EndTime);
-  var diff = StartTime - EndTime;
-  if (diff < 10) sec = 3000;
-  if (diff >= 10) sec = 7000;
+  var diff = EndTime - StartTime;
+  console.log(diff);
+  if (diff < 10) {
+    sec = 3000; 
+    messg = `Скачивание начнется через 3 секунды`;
+  } else {
+    sec = 5000; 
+    messg = `Скачивание начнется через 5 секунд`;
+  }
   if (StartTime <= 0 ){
     res.render('audio', {
       msg : 'Некорректный интервал! Попробуйте снова',
@@ -151,47 +158,8 @@ app.post('/audioDiagram', (req, res) => {
 
     cp.exec(`ConsoleApp1 ${file_path} ${par_path} ${StartTime} ${EndTime}`, function(e, stdout, stderr) { })
 
-// function checkExistsWithTimeout(path, timeout) {
-//   return new Promise((resolve, reject) => {
-//     const timeoutTimerId = setTimeout(handleTimeout, timeout)
-//     const interval = timeout / 6
-//     let intervalTimerId
-
-//     function handleTimeout() {
-//       clearTimeout(timerId)
-
-//       const error = new Error('path check timed out')
-//       error.name = 'PATH_CHECK_TIMED_OUT'
-//       reject(error)
-//     }
-
-//     function handleInterval() {
-//       fs.access(path, (err) => {
-//         if(err) {
-//           intervalTimerId = setTimeout(handleInterval, interval)
-//         } else {
-//           clearTimeout(timeoutTimerId)
-//           resolve(path)
-//         }
-//       })
-//     }
-
-//     intervalTimerId = setTimeout(handleInterval, interval)
-//   })
-// }
-
-    // checkExistsWithTimeout(`D:/imgselect/public/csv_audio/${folder}`, 2000).then(
-    //   zipFolder(`D:/imgselect/public/csv_audio/${folder}`, `D:/imgselect/public/csv_audio/${folder}.zip`, function(err) {
-    //     if(err) {
-    //         console.log('oh no!', err);
-    //     } else {
-    //         console.log('EXCELLENT');
-    //     }
-    //   })    
-    // )
-
     res.render('audio', {
-      msg : 'Дождитесь завершения обработки и скачайте файл',
+      msg : `${messg}`,
       class : 'alert-success',
       folderName : `${folder}`,
       seconds : `${sec}`

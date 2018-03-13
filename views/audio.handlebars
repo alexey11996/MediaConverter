@@ -13,27 +13,20 @@
         </form>
         <script>
             $(document).ready(function() {
-                setTimeout(function() { $('#link1').show() }, Number(`{{seconds}}`));
+                setTimeout(function() { 
+                    //$('#link1').show() 
+                    var anchor = document.createElement('a');
+                    anchor.setAttribute('href', `csv_audio/{{folderName}}.zip`);
+                    anchor.setAttribute('download', `csv_audio/{{folderName}}.zip`);
+                    //anchor.style.visibility = 'hidden';
+                    //document.body.appendChild(anchor);
+                    anchor.click();
+                    //document.body.removeChild(anchor);
+                    }, Number(`{{seconds}}`)
+                );
             })
         </script>
-        {{!-- <script>
-            function fileExists(fileLocation) {
-            var response = $.ajax({
-                url: fileLocation,
-                type: 'HEAD',
-                async: true
-            }).status;
-        }
-        if (fileExists(`csv_audio/{{folderName}}.zip`) == 404)
-        {
-        fileExists(`csv_audio/{{folderName}}.zip`)
-        } else {
-            document.getElementById("link1").style.visibility="visible";
-            alert("file Доступен")
-        }
-    </script> --}}
-
-    {{else}}    
+        {{/if}}
 
     <form action="/uploadaudio" method="POST" enctype="multipart/form-data">
       <div class="form-group mb-3">
@@ -42,7 +35,6 @@
       <button class="btn btn-primary mb-3" type="submit">Отправить</button>
     </form>
  
-{{/if}}
     {{#if file}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/wavesurfer.min.js"></script>
 
