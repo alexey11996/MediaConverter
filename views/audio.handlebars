@@ -8,23 +8,37 @@
 
     {{#if folderName}}
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-        <form method="get" action="csv_audio/{{folderName}}.zip">
-        <input style="display:none;" id="link1" class="btn btn-primary mb-3" type="submit" value="Скачать"/>
-        </form>
+        <div id="loader"></div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Скачивание файла</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <p>  Длительность выбранного аудио отрезка: <kbd> 5 секунд</kbd> </p>
+                 <p>   Размер выбранного аудио отрезка: <kbd> 458 байт</kbd> </p>
+                  <p>  Скорость аудио потока: <kbd> 1411 кбит/сек</kbd></h5> </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                         <form method="get" action="csv_audio/{{folderName}}.zip">
+                            <button id="link1" class="btn btn-primary" type="submit">Скачать</button>
+                        </form>
+                </div>
+                </div>
+            </div>
+            </div>
         <script>
             $(document).ready(function() {
-                setTimeout(function() { 
-                    //$('#link1').show() 
-                    var anchor = document.createElement('a');
-                    anchor.setAttribute('href', `csv_audio/{{folderName}}.zip`);
-                    anchor.setAttribute('download', `csv_audio/{{folderName}}.zip`);
-                    //anchor.style.visibility = 'hidden';
-                    //document.body.appendChild(anchor);
-                    anchor.click();
-                    //document.body.removeChild(anchor);
-                    }, Number(`{{seconds}}`)
-                );
-            })
+                setTimeout(function() {
+                document.getElementById("loader").style.display = "none";
+                $('#myModal').modal('show');
+                }, `{{seconds}}`); // milliseconds
+            });
         </script>
         {{/if}}
 

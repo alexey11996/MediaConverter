@@ -139,13 +139,13 @@ app.post('/audioDiagram', (req, res) => {
   var StartTime = Math.floor(req.body.StartTime);
   var EndTime = Math.floor(req.body.EndTime);
   var diff = EndTime - StartTime;
-  console.log(diff);
+  //console.log(diff);
   if (diff < 10) {
-    sec = 3000; 
-    messg = `Скачивание начнется через 3 секунды`;
-  } else {
     sec = 5000; 
     messg = `Скачивание начнется через 5 секунд`;
+  } else {
+    sec = 7000; 
+    messg = `Скачивание начнется через 7 секунд`;
   }
   if (StartTime <= 0 ){
     res.render('audio', {
