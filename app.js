@@ -9,7 +9,7 @@ var fs = require('fs');
 var parse = require('csv-parse');
 var matem = require('mathjs');
 var cp = require('child_process');
-var zipFolder = require("zip-folder");
+//var aud_Buff = require('audio-buffer');
 
 const storage = multer.diskStorage({
   destination : './public/uploads/',
@@ -134,35 +134,45 @@ app.post('/audioDiagram', (req, res) => {
   var sec;
   var messg;
   var audioName = req.body.audioName;
+  var duration = req.body.dur;
   var folder = (audioName.split("/")[1]).split(".")[0];
   //console.log(folder);
   var StartTime = Math.floor(req.body.StartTime);
   var EndTime = Math.floor(req.body.EndTime);
   var diff = EndTime - StartTime;
+
   //console.log(diff);
   if (diff < 10) {
     sec = 5000; 
-    messg = `Скачивание начнется через 5 секунд`;
+    messg = `Выполняется обработка выбранного отрезка`;
   } else {
     sec = 7000; 
-    messg = `Скачивание начнется через 7 секунд`;
+    messg = `Выполняется обработка выбранного отрезка`;
   }
-  if (StartTime <= 0 ){
+  if (StartTime <= 0 || EndTime > duration ){
     res.render('audio', {
       msg : 'Некорректный интервал! Попробуйте снова',
       class : 'alert-danger'
     });
   } else {
-    var file_path = `D:/imgselect/public/${audioName}`;
-    var par_path = `D:/imgselect/public/csv_audio`;    
-
+    var file_path = `${__dirname}/public/${audioName}`;
+    var par_path = `${__dirname}/public/csv_audio`;    
+    const stats = fs.statSync(file_path)
+    const fileSizeInMegabytes = stats.size / 1000000.0
+    const DurationSize = (diff * fileSizeInMegabytes) / duration;
+    //console.log(__dirname);
     cp.exec(`ConsoleApp1 ${file_path} ${par_path} ${StartTime} ${EndTime}`, function(e, stdout, stderr) { })
 
     res.render('audio', {
       msg : `${messg}`,
       class : 'alert-success',
       folderName : `${folder}`,
-      seconds : `${sec}`
+      seconds : `${sec}`,
+      difference : diff,
+      Start : StartTime,
+      End : EndTime,
+      Size : fileSizeInMegabytes,
+      durS : DurationSize
     });
   }
 })
@@ -236,7 +246,7 @@ app.post('/uploadcsv', (req, res) => {
         var csvData=[];
         //var maximum;
         var row = fs.createReadStream(`public/csv_image/${req.file.filename}`)
-            .pipe(parse({delimiter: ','}))
+            .pipe(parse({delimiter: ';'}))
             .on('data', function(csvrow) {
                 csvData.push(csvrow);        
             })

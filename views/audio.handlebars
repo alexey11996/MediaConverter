@@ -10,23 +10,24 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
         <div id="loader"></div>
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Скачивание файла</h5>
+                    <h5 class="modal-title" id="exampleModalLongTitle">Характеристики аудиофайла</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                  <p>  Длительность выбранного аудио отрезка: <kbd> 5 секунд</kbd> </p>
-                 <p>   Размер выбранного аудио отрезка: <kbd> 458 байт</kbd> </p>
+                  <p>  Длительность выбранного аудио отрезка: <kbd> {{difference}} сек. (с {{Start}} по {{End}})</kbd> </p>
+                 <p>   Размер аудио: <kbd> {{Size}} МБ</kbd> </p>
+                 <p>   Размер выделенного аудио отрезка: <kbd> {{durS}} МБ</kbd> </p>
                   <p>  Скорость аудио потока: <kbd> 1411 кбит/сек</kbd></h5> </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                          <form method="get" action="csv_audio/{{folderName}}.zip">
-                            <button id="link1" class="btn btn-primary" type="submit">Скачать</button>
+                            <button id="link1" class="btn btn-primary" type="submit">Скачать CSV</button>
                         </form>
                 </div>
                 </div>
@@ -74,7 +75,8 @@
             <form action="/audioDiagram" id="formSend" method="post">
               <input type="hidden" value={{file}} name="audioName" id="audioName">
               <input type="hidden" value="1" name="StartTime" id="StartTime">
-              <input type="hidden" value="2" name="EndTime" id="EndTime">    
+              <input type="hidden" value="2" name="EndTime" id="EndTime">  
+              <input type="hidden" value="3" name="dur" id="dur">    
               <div class="row">   
                 <div class="col-sm-3">
               <button type="submit" class="btn btn-primary">Подтвердить выделение</button> 
@@ -88,8 +90,8 @@
             var range;
             document.getElementById('formSend').addEventListener('submit', Commit)
             function AskRange(){ 
-            range = prompt('Временной диапазон метки (в секундах):') 
-                if (range == '') { alert('Значение по умолчанию равно 5 секундам'); range = 5; }              
+            range = prompt('Временной диапазон метки (в секундах): ') 
+                if (range == '') { alert('Значение по умолчанию равно 5 секундам '); range = 5; }              
             }
             var wavesurfer = WaveSurfer.create({
             container: '#waveform',
@@ -111,7 +113,8 @@
             AskRange()
             var start = document.getElementById(`StartTime`).value = wavesurfer.getCurrentTime() - range;
             var end = document.getElementById(`EndTime`).value = wavesurfer.getCurrentTime() + range;
-            alert(`Начало отрезка: ${Math.floor(start)}` + `\n` + `Конец отрезка: ${Math.floor(end)}`);
+            document.getElementById(`dur`).value = wavesurfer.getDuration();
+            //alert(`Начало отрезка: ${Math.floor(start)}` + `\n` + `Конец отрезка: ${Math.floor(end)}`);
             }
             
         </script>

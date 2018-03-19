@@ -9,6 +9,7 @@
   "author": "Alexey",
   "license": "ISC",
   "dependencies": {
+    "audio-buffer": "^4.0.4",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
     "csv-parse": "^2.0.4",

@@ -20,21 +20,41 @@
     <img class="img-responsive" id="photo" src="{{file}}">
       <br>
         <br>
-          <form action="/imgprocess" method="post">
-              <input type="hidden" value={{file}} name="name" id="name">
-              <input type="hidden" value="0" name="x1" id="x1">
-              <input type="hidden" value="0" name="y1" id="y1">
-              <input type="hidden" value="100" name="w" id="w">
-              <input type="hidden" value="100" name="h" id="h">      
-              <div class="row">   
-                <div class="col-sm-3">
-              <button type="submit" class="btn btn-primary">Подтвердить выделение</button> 
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Характеристики выделенной части изображения</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
-              {{!-- <div class="col-sm-9">
-              <h5 id="size"></h5>
-              </div> --}}
+              <div class="modal-body">
+               <p id="size"></p>
+               <p id="width"></p>
+               <p id="height"></p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                      <form action="/imgprocess" method="post">
+                    <input type="hidden" value={{file}} name="name" id="name">
+                    <input type="hidden" value="0" name="x1" id="x1">
+                    <input type="hidden" value="0" name="y1" id="y1">
+                    <input type="hidden" value="100" name="w" id="w">
+                    <input type="hidden" value="100" name="h" id="h">    
+                    <div class="row">   
+                      <div class="col-sm-3">
+                    <button type="submit" class="btn btn-primary">Скачать CSV</button> 
+              </div>
               </div>   
-          </form>         
+          </form> 
+              </div>
+            </div>
+          </div>
+        </div>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+          Подтвердить выделение
+        </button>
           <br>
         <br>
     {{/if}}
@@ -47,7 +67,11 @@
           document.getElementById("y1").value = selection.y1;
           document.getElementById("w").value = selection.width;
           document.getElementById("h").value = selection.height;
-          alert(`Размер выделенной области составляет ${(selection.width*selection.height)/8} байт`);
+          document.getElementById("size").innerHTML = `Размер выделенной области: <kbd>${(selection.width*selection.height)/8} Байт</kbd>`;
+          document.getElementById("width").innerHTML = `Ширина изображения: <kbd>${selection.width} пикселей</kbd>`;
+          document.getElementById("height").innerHTML = `Высота изображения: <kbd>${selection.height} пикселей</kbd>`;
+
+          //alert(`Размер выделенной области составляет ${(selection.width*selection.height)/8} байт`);
         }
       });
     });

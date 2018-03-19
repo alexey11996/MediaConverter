@@ -16,21 +16,8 @@ var i = 0;
 for (l = length + 1; (i + width) < l; i += width) {
     n.push(typedarray.slice(i, i + width));
 }
-//console.log(res_name)
 
 exportToCsv(`${ImageName}-${width}x${height}x8bit.csv`, n)
-
-// let csvContent = "data:text/csv;charset=utf-8,";
-// n.forEach(function(rowArray){
-//    let row = rowArray.join(",");
-//    csvContent += row + "\r\n";
-// }); 
-// var encodedUri = encodeURI(csvContent);
-// var link = document.createElement("a");
-// link.setAttribute("href", encodedUri);
-// link.setAttribute("download", "imageData.csv");
-// document.body.appendChild(link); // Required for FF
-// link.click(); 
 
 function exportToCsv(filename, rows) {
     var processRow = function (row) {
@@ -41,10 +28,10 @@ function exportToCsv(filename, rows) {
                 innerValue = row[j].toLocaleString();
             };
             var result = innerValue.replace(/"/g, '""');
-            if (result.search(/("|,|\n)/g) >= 0)
+            if (result.search(/("|;|\n)/g) >= 0)
                 result = '"' + result + '"';
             if (j > 0)
-                finalVal += ',';
+                finalVal += ';';
             finalVal += result;
         }
         return finalVal + '\n';
