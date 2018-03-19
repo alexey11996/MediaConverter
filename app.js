@@ -132,22 +132,16 @@ app.post('/uploadaudio', (req, res) => {
 
 app.post('/audioDiagram', (req, res) => {
   var sec;
-  var messg;
   var audioName = req.body.audioName;
   var duration = req.body.dur;
   var folder = (audioName.split("/")[1]).split(".")[0];
-  //console.log(folder);
   var StartTime = Math.floor(req.body.StartTime);
   var EndTime = Math.floor(req.body.EndTime);
   var diff = EndTime - StartTime;
-
-  //console.log(diff);
   if (diff < 10) {
     sec = 5000; 
-    messg = `Выполняется обработка выбранного отрезка`;
   } else {
     sec = 7000; 
-    messg = `Выполняется обработка выбранного отрезка`;
   }
   if (StartTime <= 0 || EndTime > duration ){
     res.render('audio', {
@@ -160,11 +154,10 @@ app.post('/audioDiagram', (req, res) => {
     const stats = fs.statSync(file_path)
     const fileSizeInMegabytes = stats.size / 1000000.0
     const DurationSize = (diff * fileSizeInMegabytes) / duration;
-    //console.log(__dirname);
     cp.exec(`ConsoleApp1 ${file_path} ${par_path} ${StartTime} ${EndTime}`, function(e, stdout, stderr) { })
 
     res.render('audio', {
-      msg : `${messg}`,
+      msg : `Выполняется обработка выбранного отрезка`,
       class : 'alert-success',
       folderName : `${folder}`,
       seconds : `${sec}`,
