@@ -1,0 +1,114 @@
+<br>
+<h3>Конвертация видео в CSV формат</h3>
+{{#if msg}}
+<div class="alert {{class}}" role="alert">
+  {{msg}}
+</div>
+{{/if}} {{#if imgCount}}
+<script>
+  $(document).ready(function () {
+    $('#myModal').modal('show');
+  });
+</script>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Содержимое архива</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Количество изображений в архиве:
+          <kbd>{{imgCount}}</kbd>
+        </p>
+        <p>Расширения загружаемых файлов:
+          <kbd>{{imgExt}}</kbd>
+        </p>
+        <p>Размер архива:
+          <kbd>{{zSize}} МБ</kbd>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <form action="/videocsv" method="post">
+
+          <input type="hidden" value="{{Mypth}}" name="DirName" id="DirName">
+          <div class="row">
+            <div class="col-sm-3">
+              <button type="submit" class="btn btn-primary">Скачать CSV</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{/if}} {{#if ZipPath}}
+<p>
+  Чтобы воспользоваться данной функцией сгенерируйте набор кадров с помощью вспомогательной утилиты
+  <code>VideoConverter</code>, после чего загрузите полученный архив изображений.
+</p>
+
+<form action="/uploadvideo" method="POST" enctype="multipart/form-data">
+  <div class="form-group mb-3">
+    <input name="myVideo" class="form-control-file" type="file">
+  </div>
+  <button class="btn btn-primary" type="submit">Отправить</button>
+</form>
+<input type="hidden" value="{{ZipPath}}" id="ZipPath">
+<input type="hidden" value="{{FName}}" id="FName">
+<script>
+  var ZipPath = document.getElementById("ZipPath").value;
+  var FName = document.getElementById("FName").value;
+  //alert(ZipPath + ' ' + FName );
+  var link = document.createElement("a");
+  link.setAttribute("href", ZipPath);
+            link.setAttribute("download", FName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link); 
+</script> 
+{{/if}} {{#if files}}
+<div class="row">
+  {{#each files}}
+  <div class="col-md-2">
+    <div class="thumbnail">
+      <a href="{{this}}" target="_blank">
+        <img src="{{this}}" alt="Lights" style="width:100%">
+        <div class="caption">
+          <p>
+            <hr>
+          </p>
+        </div>
+      </a>
+    </div>
+  </div>
+  {{/each}}
+</div>
+<form action="/videorun" method="post">
+  <input type="hidden" value="{{folder}}" name="pth" id="pth">
+  <input type="hidden" value="{{ZipSize}}" name="ZipSize" id="ZipSize">
+  <div class="row">
+    <div class="col-sm-3">
+      <button type="submit" class="btn btn-primary">Подтвердить конвертацию</button>
+    </div>
+  </div>
+</form>
+<br> {{else}}
+<p>
+  Чтобы воспользоваться данной функцией сгенерируйте набор кадров с помощью вспомогательной утилиты
+  <code>VideoConverter</code>, после чего загрузите полученный архив изображений.
+</p>
+
+<form action="/uploadvideo" method="POST" enctype="multipart/form-data">
+  <div class="form-group mb-3">
+    <input name="myVideo" class="form-control-file" type="file">
+  </div>
+  <button class="btn btn-primary" type="submit">Отправить</button>
+</form>
+
+{{/if}}
