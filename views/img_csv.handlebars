@@ -1,33 +1,98 @@
 <br>
-   <h3>Получение характеристик медиафайлов по их CSV</h3>     
-       {{#if msg}}
-          <div class="alert {{class}}" role="alert">
-            {{msg}}
-          </div>
-        {{/if}} 
+<h3>Получение характеристик медиафайлов по их CSV</h3>
+{{#if msg}}
+<div class="alert {{class}}" role="alert">
+  {{msg}}
+</div>
+{{/if}}
 
-    <form action="/uploadcsv" method="POST" enctype="multipart/form-data">
-      <div class="form-group mb-3">
-          <input name="mycsv" class="form-control-file" type="file">
-      </div>
-      <button class="btn btn-primary mb-3" type="submit">Отправить</button>
-    </form>
-
-  {{#if result}}
+<form action="/uploadcsv" method="POST" enctype="multipart/form-data">
+  <div class="form-group mb-3">
+    <input name="mycsv" class="form-control-file" type="file">
+  </div>
+  <button class="btn btn-primary mb-3" id="Send" type="submit">Отправить</button>
+</form>
+<div id="loader"></div>
+<script>
+  $(document).ready(function () {
+    document.getElementById("loader").style.display = "none";
+    $("#Send").click(function () {
+      document.getElementById("loader").style.display = "block";
+    });
+  });
+</script> {{#if result}}
 <table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Характеристика</th>
-        <th>Значение</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each result}}
-      <tr>
-        <td>{{@key}}</td>
-        <td>{{this}}</td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
-  {{/if}}
+  <thead>
+    <tr>
+      <th>Характеристика</th>
+      <th>Значение</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each result}}
+    <tr>
+      <td>{{@key}}</td>
+      <td>{{this}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+<hr>
+<input type="hidden" value="{{res_array}}" id="res_array">
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/highcharts-more.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<div id="container" style="height:500px;"></div>
+<script>
+  var res_array = JSON.parse(document.getElementById("res_array").value);
+  for (var i = 0; i < res_array.length; i++) {
+    res_array[i] = parseInt(res_array[i]);
+  }
+  removeElement(res_array, 255);
+  function removeElement(arrayName, arrayElement) {
+    for (var i = 0; i < arrayName.length; i++) {
+      if (arrayName[i] == arrayElement)
+        arrayName.splice(i, 1);
+    }
+  }
+
+  //var p = $.parseJSON(res_array);
+  console.log(res_array);
+  var chart = new Highcharts.Chart({
+    chart: {
+      renderTo: 'container',
+      type: 'column',
+      zoomType: 'x'
+    },
+    title: {
+      text: 'Гистограмма значений элементов CSV файла'
+    },
+    subtitle: {
+      text: document.ontouchstart === undefined ?
+        'Нажмите и поведите курсор в нужном направлении для увеличения масштаба' : 'Pinch the chart to zoom in'
+    },
+    xAxis: {
+
+    },
+    yAxis: {
+      title: {
+        text: 'Значения элементов CSV файла'
+      }
+    },
+
+    plotOptions: {
+      column: {
+        groupPadding: 0,
+        pointPadding: 0,
+        borderWidth: 0.5
+      }
+    },
+
+    series: [{
+      name: 'Элементы CSV файла',
+      data: res_array
+    }]
+
+  });
+
+</script> {{/if}}

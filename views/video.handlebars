@@ -9,6 +9,7 @@
   $(document).ready(function () {
     $('#myModal').modal('show');
   });
+  
 </script>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -37,7 +38,7 @@
           <input type="hidden" value="{{Mypth}}" name="DirName" id="DirName">
           <div class="row">
             <div class="col-sm-3">
-              <button type="submit" class="btn btn-primary">Скачать CSV</button>
+              <button type="submit" id="DownloadCsv"class="btn btn-primary">Скачать CSV</button>
             </div>
           </div>
         </form>
@@ -73,6 +74,15 @@
             document.body.removeChild(link); 
 </script> 
 {{/if}} {{#if files}}
+<div id="loader"></div>
+<script>
+    $(document).ready(function () {
+    document.getElementById("loader").style.display = "none";
+        $("#ProveConvert").click(function(){
+        document.getElementById("loader").style.display = "block";
+    });
+  });
+</script>
 <div class="row">
   {{#each files}}
   <div class="col-md-2">
@@ -94,21 +104,29 @@
   <input type="hidden" value="{{ZipSize}}" name="ZipSize" id="ZipSize">
   <div class="row">
     <div class="col-sm-3">
-      <button type="submit" class="btn btn-primary">Подтвердить конвертацию</button>
+      <button type="submit" id="ProveConvert" class="btn btn-primary">Подтвердить конвертацию</button>
     </div>
   </div>
 </form>
 <br> {{else}}
+<script>
+    $(document).ready(function () {
+    document.getElementById("loader").style.display = "none";
+        $("#SendZip").click(function(){
+        document.getElementById("loader").style.display = "block";
+    });
+  });
+</script>
+<div id="loader"></div>
 <p>
   Чтобы воспользоваться данной функцией сгенерируйте набор кадров с помощью вспомогательной утилиты
   <code>VideoConverter</code>, после чего загрузите полученный архив изображений.
 </p>
-
 <form action="/uploadvideo" method="POST" enctype="multipart/form-data">
   <div class="form-group mb-3">
     <input name="myVideo" class="form-control-file" type="file">
   </div>
-  <button class="btn btn-primary" type="submit">Отправить</button>
+  <button class="btn btn-primary" id="SendZip" type="submit">Отправить</button>
 </form>
 
 {{/if}}

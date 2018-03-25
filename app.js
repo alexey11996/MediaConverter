@@ -11,6 +11,7 @@ var matem = require('mathjs');
 var cp = require('child_process');
 var AdmZip = require('adm-zip');
 var jpeg = require('jpeg-js');
+//var detect = require('detect-csv')
 //var aud_Buff = require('audio-buffer');
 
 const storage = multer.diskStorage({
@@ -83,11 +84,11 @@ function checkFileType(file, cb) {
 }
 
 function checkCSV(file, cb) {
-  const filetype = /csv|xlsx/;
+  const filetype = /csv/;
   const extname = filetype.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetype.test(file.mimetype);
+  //const mimetype = filetype.test(file.mimetype);
 
-  if (mimetype && extname) {
+  if (/*mimetype && */extname) {
     return cb(null, true)
   } else {
     cb('Только CSV формат!');
@@ -401,7 +402,7 @@ app.post('/audioDiagram', (req, res) => {
   } else {
     var file_path = path.normalize(`${__dirname}/public/${audioName}`);
     var par_path = path.normalize(`${__dirname}/public/csv_audio`);
-    console.log(file_path)
+    //console.log(file_path)
     const stats = fs.statSync(file_path)
     const fileSizeInMegabytes = stats.size / 1000000.0
     const DurationSize = (diff * fileSizeInMegabytes) / duration;
@@ -491,34 +492,44 @@ app.post('/uploadcsv', (req, res) => {
         //var maximum;
         var row = fs.createReadStream(`public/csv_image/${req.file.filename}`)
           .pipe(parse({ delimiter: ';' }))
+          .on('error', function(err) {
+            res.render('img_csv', {
+              msg : 'Некорректный файл!',
+              class : 'alert-danger'
+            })
+          })
           .on('data', function (csvrow) {
             csvData.push(csvrow);
           })
           .on('end', function () {
+            var lnth = csvData[0].length;
+            //console.log(lnth);
             for (var i = 0; i < csvData.length; i++) vector = vector.concat(csvData[i]);
-            //maximum = max(vector)
+            var arr = JSON.stringify(vector.slice(0, 3000));
+            if (lnth <= 1){
+              res.render('img_csv', {
+                msg: `Значения CSV файла должны быть разделены символом ;`,
+                class: 'alert-danger'
+              })
+            } else {
             res.render('img_csv', {
               msg: 'Файл добавлен! Характеристики файла представлены ниже',
               class: 'alert-success',
               result: {
-                "Максимальное значение": `${max(vector)}`,
+                /*"Максимальное значение": `${max(vector)}`,
                 "Минимальное значение": `${min(vector)}`,
-                "Максимальная амплитуда значений": `${range(vector)}`,
+                "Максимальная амплитуда значений": `${range(vector)}`,*/
                 "Сумма элементов": `${sum(vector)}`,
                 "Дисперсия": `${variance(vector)}`,
                 "Среднеквадратическое отклонение": `${standardDeviation(vector)}`,
                 "Среднее значение": `${mean(vector)}`,
                 "Медиана": `${median(vector)}`,
                 "Мода": `${modes(vector)}`
-              }
+              },
+              res_array: arr
             });
-          });
-        // row.on('error', function(err) {
-        //   res.render('img_csv', {
-        //     msg : 'Некорректный файл!',
-        //     class : 'alert-danger'
-        //   });
-        // });
+          }
+        })
       }
     }
   })

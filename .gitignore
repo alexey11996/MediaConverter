@@ -1,1 +1,5 @@
 node_modules/
+public/csv_audio
+public/csv_image
+public/uploads
+public/video
