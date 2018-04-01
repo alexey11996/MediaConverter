@@ -164,12 +164,12 @@ app.post('/uploadvideo', (req, res) => {
         fs.readdir(`${__dirname}/public/video/${(req.file.filename).split(".")[0]}`, (err, files) => {
           files.forEach(file => {
             arr.push(`video/${req.file.filename.split(".")[0]}/${file}`)
-            jimp.read(`public/video/${req.file.filename.split(".")[0]}/${file}`, function (err, lenna) {
-                if (err) {
-                  throw err;
-                }
-                lenna.write(`public/video/${req.file.filename.split(".")[0]}/${file}`);
-              })
+            // jimp.read(`public/video/${req.file.filename.split(".")[0]}/${file}`, function (err, lenna) {
+            //     if (err) {
+            //       throw err;
+            //     }
+            //     lenna.write(`public/video/${req.file.filename.split(".")[0]}/${file}`);
+            //   })
           });
         });
         res.render('video', {
