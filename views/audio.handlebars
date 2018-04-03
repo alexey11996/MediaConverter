@@ -1,9 +1,12 @@
 <br>
    <h3>Конвертация аудиозаписи в CSV формат</h3>     
        {{#if msg}}
-          <div class="alert {{class}}" role="alert">
-            {{msg}}
-          </div>
+          <div class="alert {{class}} alert-dismissible fade show" role="alert">
+        {{msg}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
         {{/if}} 
 
     {{#if folderName}}
@@ -19,7 +22,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                  <p>  Длительность выбранного аудио отрезка: <kbd> {{difference}} сек. (с {{Start}} по {{End}})</kbd> </p>
+                  <p>  Длительность выбранного аудио отрезка: <kbd> {{difference}} миллисек. (с {{Start}} по {{End}})</kbd> </p>
                  <p>   Размер аудио: <kbd> {{Size}} МБ</kbd> </p>
                  <p>   Размер выделенного аудио отрезка: <kbd> {{durS}} МБ</kbd> </p>
                   <p>  Скорость аудио потока: <kbd> 1411 кбит/сек</kbd></h5> </p>
@@ -90,8 +93,8 @@
             var range;
             document.getElementById('formSend').addEventListener('submit', Commit)
             function AskRange(){ 
-            range = prompt('Временной диапазон метки (в секундах): ') 
-                if (range == '') { alert('Значение по умолчанию равно 5 секундам '); range = 5; }              
+            range = prompt('Временной диапазон метки (в миллисекундах): ') 
+                if (range == '') { alert('Значение по умолчанию равно 500 миллисекундам '); range = 500; }              
             }
             var wavesurfer = WaveSurfer.create({
             container: '#waveform',
@@ -111,9 +114,9 @@
 
             function Commit() {
             AskRange()
-            var start = document.getElementById(`StartTime`).value = wavesurfer.getCurrentTime() - range;
-            var end = document.getElementById(`EndTime`).value = wavesurfer.getCurrentTime() + range;
-            document.getElementById(`dur`).value = wavesurfer.getDuration();
+            var start = document.getElementById(`StartTime`).value = wavesurfer.getCurrentTime()*1000 - range;
+            var end = document.getElementById(`EndTime`).value = wavesurfer.getCurrentTime()*1000 + range;
+            document.getElementById(`dur`).value = wavesurfer.getDuration()*1000;
             //alert(`Начало отрезка: ${Math.floor(start)}` + `\n` + `Конец отрезка: ${Math.floor(end)}`);
             }
             

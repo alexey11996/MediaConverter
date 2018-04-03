@@ -389,7 +389,7 @@ app.post('/audioDiagram', (req, res) => {
   var StartTime = Math.floor(req.body.StartTime);
   var EndTime = Math.floor(req.body.EndTime);
   var diff = EndTime - StartTime;
-  if (diff < 10) {
+  if (diff < 10000) {
     sec = 5000;
   } else {
     sec = 7000;
