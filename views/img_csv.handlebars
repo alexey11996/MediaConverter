@@ -48,10 +48,12 @@
 <div id="container" style="height:500px;"></div>
 <script>
   var res_array = JSON.parse(document.getElementById("res_array").value);
-  for (var i = 0; i < res_array.length; i++) {
+
+  {{!-- for (var i = 0; i < res_array.length; i++) {
     res_array[i] = parseInt(res_array[i]);
-  }
-  removeElement(res_array, 255);
+  } --}}
+  
+  removeElement(res_array, 0.255);
   function removeElement(arrayName, arrayElement) {
     for (var i = 0; i < arrayName.length; i++) {
       if (arrayName[i] == arrayElement)

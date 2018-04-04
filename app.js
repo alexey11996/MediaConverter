@@ -505,6 +505,14 @@ app.post('/uploadcsv', (req, res) => {
             var lnth = csvData[0].length;
             //console.log(lnth);
             for (var i = 0; i < csvData.length; i++) vector = vector.concat(csvData[i]);
+            if (typeof(vector[0] == 'string')){
+              vector.forEach((o, i, a) => 
+              a[i] = parseFloat(a[i].replace(",", ".")))
+            }
+            if (typeof(vector[0] == 'number')){
+              vector.forEach((o, i, a) => 
+              a[i] = a[i] /1000
+              )}
             var arr = JSON.stringify(vector.slice(0, 3000));
             if (lnth <= 1){
               res.render('img_csv', {
@@ -524,7 +532,7 @@ app.post('/uploadcsv', (req, res) => {
                 "Среднеквадратическое отклонение": `${standardDeviation(vector)}`,
                 "Среднее значение": `${mean(vector)}`,
                 "Медиана": `${median(vector)}`,
-                "Мода": `${modes(vector)}`
+                //"Мода": `${modes(vector)}`
               },
               res_array: arr
             });
@@ -558,6 +566,7 @@ function sum(array) {
 }
 
 function variance(array) {
+  console.log(typeof(array[0]) + ' ' + array[0])
   var mean = matem.mean(array);
   return matem.mean(array.map(function (num) {
     return Math.pow(num - mean, 2);
