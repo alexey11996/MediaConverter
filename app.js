@@ -436,12 +436,11 @@ app.post('/uploadimg', (req, res) => {
           class: 'alert-danger'
         });
       } else {
-        // Здесь добавить путь в БД (в будущем)
-        res.render('img', {
-          msg: 'Файл добавлен! Выделите необходимую область и подтвердите выделение',
-          class: 'alert-success',
-          file: `uploads/${req.file.filename}`
-        });
+                res.render('img', {
+                  msg: 'Файл добавлен! Выделите необходимую область и подтвердите выделение',
+                  class: 'alert-success',
+                  file: `uploads/${req.file.filename}`
+                });
       }
     }
   })
@@ -489,7 +488,6 @@ app.post('/uploadcsv', (req, res) => {
       } else {
         var vector = [];
         var csvData = [];
-        //var maximum;
         var row = fs.createReadStream(`public/csv_image/${req.file.filename}`)
           .pipe(parse({ delimiter: ';' }))
           .on('error', function(err) {
@@ -503,7 +501,6 @@ app.post('/uploadcsv', (req, res) => {
           })
           .on('end', function () {
             var lnth = csvData[0].length;
-            //console.log(lnth);
             for (var i = 0; i < csvData.length; i++) vector = vector.concat(csvData[i]);
             if (typeof(vector[0] == 'string')){
               vector.forEach((o, i, a) => 
@@ -524,15 +521,11 @@ app.post('/uploadcsv', (req, res) => {
               msg: 'Файл добавлен! Характеристики файла представлены ниже',
               class: 'alert-success',
               result: {
-                /*"Максимальное значение": `${max(vector)}`,
-                "Минимальное значение": `${min(vector)}`,
-                "Максимальная амплитуда значений": `${range(vector)}`,*/
                 "Сумма элементов": `${sum(vector)}`,
                 "Дисперсия": `${variance(vector)}`,
                 "Среднеквадратическое отклонение": `${standardDeviation(vector)}`,
                 "Среднее значение": `${mean(vector)}`,
                 "Медиана": `${median(vector)}`,
-                //"Мода": `${modes(vector)}`
               },
               res_array: arr
             });
@@ -566,7 +559,6 @@ function sum(array) {
 }
 
 function variance(array) {
-  console.log(typeof(array[0]) + ' ' + array[0])
   var mean = matem.mean(array);
   return matem.mean(array.map(function (num) {
     return Math.pow(num - mean, 2);

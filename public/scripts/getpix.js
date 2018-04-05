@@ -1,4 +1,5 @@
 var myImage = document.getElementById('pht_edit')
+myImage.crossOrigin = "Anonymous";
 var ImageName = (((document.getElementById('pht_edit').src).replace(/^.*[\\\/]/, '')).split('.'))[0];
 var w = myImage.width, h = myImage.height;
 var canvas = document.createElement('canvas');
@@ -51,10 +52,12 @@ function exportToCsv(filename, rows) {
             // Browsers that support HTML5 download attribute
             var url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
+            //console.log(url);
             link.setAttribute("download", filename);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
+            //console.log(link);
             document.body.removeChild(link);
         }
     }
