@@ -164,12 +164,6 @@ app.post('/uploadvideo', (req, res) => {
         fs.readdir(`${__dirname}/public/video/${(req.file.filename).split(".")[0]}`, (err, files) => {
           files.forEach(file => {
             arr.push(`video/${req.file.filename.split(".")[0]}/${file}`)
-            // jimp.read(`public/video/${req.file.filename.split(".")[0]}/${file}`, function (err, lenna) {
-            //     if (err) {
-            //       throw err;
-            //     }
-            //     lenna.write(`public/video/${req.file.filename.split(".")[0]}/${file}`);
-            //   })
           });
         });
         res.render('video', {
@@ -188,8 +182,6 @@ app.post('/videorun', (req, res) => {
   var pth = req.body.pth;
   var ZipSize = req.body.ZipSize;
   var ImageCount, ImageExtension;
-  //console.log(pth);
-
   function scanDir(folder, files = []) {
 
     var me = this,
@@ -275,7 +267,6 @@ app.post('/videorun', (req, res) => {
     'jpeg'
   ];
 
-  // scan images and filter files if not images
   let files = scanDir(`public/${pth}`).filter((file) => {
     let extension = file.split('.').pop();
     ImageExtension = extension;
@@ -284,9 +275,6 @@ app.post('/videorun', (req, res) => {
 
   let promises = [];
 
-  // for each filename get size info and 
-  // get uint8arr data and finally
-  // convert data un csv row line
   for (let file of files) {
     promises.push(
       getImageInfos(file)
@@ -295,7 +283,6 @@ app.post('/videorun', (req, res) => {
     );
   }
 
-  // resolve all promises
   Promise.all(promises)
     .then(() => {
       console.log('end');
@@ -315,7 +302,6 @@ app.post('/videorun', (req, res) => {
 
 app.post('/videocsv', (req, res) => {
   var DirName = req.body.DirName;
-  //console.log(DirName.split('/')[1]);
 
   function scanDir(folder, files = []) {
     var me = this,
@@ -335,7 +321,6 @@ app.post('/videocsv', (req, res) => {
 
   let validExtensions = [ 'csv' ];
 
-  // scan images and filter files if not images
   let files = scanDir(`public/${DirName}`).filter((file) => {
     let extension = file.split('.').pop();
     ImageExtension = extension;
@@ -344,10 +329,9 @@ app.post('/videocsv', (req, res) => {
   var zip = new AdmZip();
   for (let file of files){
     zip.addFile(`${file.split('/')[3]}`, fs.readFileSync(file), '', 0644);
-    //console.log(file);
+
   }
   zip.writeZip(`${__dirname}/public/video/${DirName.split('/')[1]}-Converted.zip`);
-  //console.log(files);
 
   res.render('video', {
     msg: 'Скачивание начнется через несколько секунд',
@@ -402,7 +386,6 @@ app.post('/audioDiagram', (req, res) => {
   } else {
     var file_path = path.normalize(`${__dirname}/public/${audioName}`);
     var par_path = path.normalize(`${__dirname}/public/csv_audio`);
-    //console.log(file_path)
     const stats = fs.statSync(file_path)
     const fileSizeInMegabytes = stats.size / 1000000.0
     const DurationSize = (diff * fileSizeInMegabytes) / duration;
