@@ -491,7 +491,7 @@ app.post('/uploadcsv', (req, res) => {
               vector.forEach((o, i, a) => 
               a[i] = a[i] /1000
               )}
-            var arr = JSON.stringify(vector.slice(0, 3000));
+            var arr = JSON.stringify(vector.slice(0, 2000));
             if (lnth <= 1){
               res.render('img_csv', {
                 msg: `Значения CSV файла должны быть разделены символом ;`,
