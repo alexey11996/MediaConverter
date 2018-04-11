@@ -11,8 +11,6 @@ var matem = require('mathjs');
 var cp = require('child_process');
 var AdmZip = require('adm-zip');
 var jpeg = require('jpeg-js');
-//var detect = require('detect-csv')
-//var aud_Buff = require('audio-buffer');
 
 const storage = multer.diskStorage({
   destination: './public/uploads/',
